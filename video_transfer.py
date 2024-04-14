@@ -1,4 +1,3 @@
-import hashlib
 import os
 import re
 import shutil
@@ -68,9 +67,12 @@ class VideoTransfer:
             return
 
         logger.debug("Start download: {} into {}...".format(self._video_url, self.get_video_path()))
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([self._video_url])
-        logger.debug("End download: {} into {}.".format(self._video_url, self.get_video_path()))
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([self._video_url])
+                logger.debug("End download: {} into {}.".format(self._video_url, self.get_video_path()))
+        except Exception as e:
+            raise e
 
     def download_image(self, image_url: str) -> str:
         image_folder = self._download_dir
@@ -103,9 +105,13 @@ class VideoTransfer:
         :param jpg_path: jpg格式的图片路径
         :return: None
         """
-        im = Image.open(webp_path).convert('RGB')
-        im.save(jpg_path, 'jpeg')
-        im.close()
+        try:
+            im = Image.open(webp_path).convert('RGB')
+            im.save(jpg_path, 'jpeg')
+        except Exception as e:
+            raise e
+        finally:
+            im.close()
 
     def get_video_meta(self):
         ydl_opts = {
@@ -164,12 +170,12 @@ class VideoTransfer:
             tags[i] = tag[:20]
         return tags
 
-    def download_youtube(self):
+    def download_youtube(self) -> bool:
         self.get_video_meta()
         self.download_video()
         self.download_image(self._video_cover_url)
 
-    def upload_bilibili(self):
+    def upload_bilibili(self) -> bool:
         self._video_tags.append(self._video_author)
         self._video_tags.append("搬运")
         self._video_tags.append("油管")
@@ -191,7 +197,7 @@ class VideoTransfer:
         if not os.path.exists("cookie.json"):
             raise NotLoginErr()
 
-        command = ("./biliup upload "
+        command = ("./biliup_macos_amd64 upload "
                    + " --v " + repr(self.get_video_path())
                    + " --cover " + repr(self.get_cover_path())
                    + " --title " + repr(self._video_title[:80])
@@ -210,15 +216,18 @@ class VideoTransfer:
                 logger.debug(
                     "投稿失败,是bug或biliup出了问题。ask issues on https://github.com/Quandong-Zhang/youtube-trans-bot/issues or "
                     "https://github.com/ForgQi/biliup-rs/issues ")
-                return
             else:
                 logger.debug("这个视频好像之前投过了...")
                 if self.remove_after_download:
                     shutil.rmtree(self.get_video_path())
+
+            return False
         else:
             logger.debug("投稿成功!")
-        if self.remove_after_download:
-            shutil.rmtree(self.get_video_path())
+            if self.remove_after_download:
+                shutil.rmtree(self.get_video_path())
+
+            return True
 
 
 if __name__ == '__main__':

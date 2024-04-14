@@ -5,7 +5,7 @@ import time
 import requests
 from typing import List
 
-from downloader import VideoTransfer
+from video_transfer import VideoTransfer
 
 from util import logger
 
@@ -108,9 +108,12 @@ class BiliTaskManager:
 
                     transferer = VideoTransfer(video_url, tid)
                     transferer.download_youtube()
-                    transferer.upload_bilibili()
+                    success = transferer.upload_bilibili()
 
                     task_history[video_url] = tid
+                    if success:
+                        self.save_record(task_history)
+
                     time.sleep(self.refresh_interval_seconds)
 
                 time.sleep(self.refresh_interval_seconds)
@@ -118,8 +121,6 @@ class BiliTaskManager:
             logger.error('{}'.format(e))
         except Exception as e:
             logger.error('{}'.format(e))
-        finally:
-            self.save_record(task_history)
 
 
 if __name__ == '__main__':
