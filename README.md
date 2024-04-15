@@ -27,7 +27,7 @@
 git clone git@github.com:1130646208/you2bi.git && cd you2bi
 python3 -m virtualenv .venv
 source .venv/bin/activate
-pip3 install requirements.txt
+pip3 install -r requirements.txt
 ```
 
 - 第三步,登录bilibili(暂时只支持macos)
