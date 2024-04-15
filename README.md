@@ -43,7 +43,7 @@ python3 task_manager.py
 ```
 
 - 最后一步,从youtube中复制视频链接,并从sender账号向receiver账号发送消息,具体格式(tid即[B站分区id](https://biliup.github.io/tid-ref.html)):
-  - \$video_url\$ \<tid\>
+  - \$ video_url \$ \<tid\>
 
 ## 致谢
 - git@github.com:biliup/biliup-rs.git
