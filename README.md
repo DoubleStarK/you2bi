@@ -17,7 +17,7 @@
   - [ ] 根据热词排行推荐视频
 
 ## Quick Start 使用方式
-python -V > 3.9
+`python -V >= 3.9`
 
 **macos**
 - 第一步,确保有两个B站账号,并且可以相互发送私信,准备好这两个账号的uid
@@ -43,7 +43,7 @@ python3 task_manager.py
 ```
 
 - 最后一步,从youtube中复制视频链接,并从sender账号向receiver账号发送消息,具体格式(tid即[B站分区id](https://biliup.github.io/tid-ref.html)):
-  - $video_url$ \<tid\>
+  - \$video_url\$ \<tid\>
 
 ## 致谢
 - git@github.com:biliup/biliup-rs.git
