@@ -1,0 +1,8 @@
+.idea/
+.venv/
+downloads/
+__pycache__/
+*.log
+data.json
+cookie.json
+biliup
