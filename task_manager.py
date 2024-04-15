@@ -95,35 +95,42 @@ class BiliTaskManager:
         try:
             task_history = self.read_records()
         except Exception as e:
+            logger.error('读取历史记录失败: {}'.format(e.with_traceback))
             task_history = dict()
+        counter = 0
+        while True:
+            try:
+                while True:
+                    counter += 1
+                    logger.info("Start new round {}".format(counter))
+                    task_list = self.get_tasks()
+                    for video_url, tid in task_list.items():
+                        if video_url in task_history.keys():
+                            logger.debug("Skip already done task: video_url {} to tid {}.".format(video_url, tid))
+                            continue
+                        logger.debug("New task: video_url {} to tid {}.".format(video_url, tid))
 
-        try:
-            while True:
-                task_list = self.get_tasks()
-                for video_url, tid in task_list.items():
-                    if video_url in task_history.keys():
-                        logger.debug("Skip already done task: video_url {} to tid {}.".format(video_url, tid))
-                        continue
-                    logger.debug("New task: video_url {} to tid {}.".format(video_url, tid))
+                        transferer = VideoTransfer(video_url, tid)
+                        transferer.download_youtube()
+                        success = transferer.upload_bilibili()
 
-                    transferer = VideoTransfer(video_url, tid)
-                    transferer.download_youtube()
-                    success = transferer.upload_bilibili()
+                        task_history[video_url] = tid
+                        if success:
+                            self.save_record(task_history)
 
-                    task_history[video_url] = tid
-                    if success:
-                        self.save_record(task_history)
+                        time.sleep(self.refresh_interval_seconds)
 
                     time.sleep(self.refresh_interval_seconds)
+            except RuntimeError as e:
+                logger.error('运行时错误: {}'.format(e.with_traceback))
+            except Exception as e:
+                logger.error('捕获异常: {}'.format(e.with_traceback))
 
-                time.sleep(self.refresh_interval_seconds)
-        except RuntimeError as e:
-            logger.error('{}'.format(e))
-        except Exception as e:
-            logger.error('{}'.format(e))
+            time.sleep(self.refresh_interval_seconds)
+
 
 
 if __name__ == '__main__':
     sender = '384542669'
     receiver = '3546592707610853'
-    BiliTaskManager(sender, receiver, refresh_interval_seconds=10).run_task()
+    BiliTaskManager(sender, receiver, refresh_interval_seconds=120).run_task()

@@ -8,7 +8,7 @@ from httpx import Timeout
 logger = logging.getLogger(__name__)
 # logging.basicConfig(level=logging.INFO)
 logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter("[%(asctime)s | %(levelname)s]: %(message)s", "%Y-%m-%d %H:%M:%S")
+formatter = logging.Formatter("[%(asctime)s | %(levelname)s | %(filename)s:%(lineno)d]: %(message)s", "%Y-%m-%d %H:%M:%S")
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 

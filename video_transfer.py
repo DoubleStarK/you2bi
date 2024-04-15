@@ -197,7 +197,7 @@ class VideoTransfer:
         if not os.path.exists("cookie.json"):
             raise NotLoginErr()
 
-        command = ("./biliup_macos_amd64 upload "
+        command = ("./biliup_macos_arm64 upload "
                    + " --v " + repr(self.get_video_path())
                    + " --cover " + repr(self.get_cover_path())
                    + " --title " + repr(self._video_title[:80])
@@ -219,13 +219,13 @@ class VideoTransfer:
             else:
                 logger.debug("这个视频好像之前投过了...")
                 if self.remove_after_download:
-                    shutil.rmtree(self.get_video_path())
+                    shutil.rmtree(self._download_dir)
 
             return False
         else:
             logger.debug("投稿成功!")
             if self.remove_after_download:
-                shutil.rmtree(self.get_video_path())
+                shutil.rmtree(self._download_dir)
 
             return True
 
