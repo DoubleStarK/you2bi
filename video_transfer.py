@@ -7,8 +7,6 @@ from PIL import Image
 
 import util
 from typing import List
-
-from exceptions import VideoNotExistErr, NotLoginErr
 from util import logger
 
 
@@ -50,7 +48,7 @@ class VideoTransfer:
 
     def get_video_path(self):
         if len(self._video_id) == 0:
-            raise VideoNotExistErr(self._video_id, "")
+            raise FileNotFoundError(self._video_id)
         return '{}/{}.mp4'.format(self._download_dir, self._video_id)
 
     def get_cover_path(self):
@@ -195,9 +193,9 @@ class VideoTransfer:
                                    '', self._video_title)
 
         if not os.path.exists("cookie.json"):
-            raise NotLoginErr()
+            raise RuntimeError
 
-        command = ("./biliup_macos_arm64 upload "
+        command = ("./biliup upload "
                    + " --v " + repr(self.get_video_path())
                    + " --cover " + repr(self.get_cover_path())
                    + " --title " + repr(self._video_title[:80])

@@ -40,7 +40,8 @@ class BiliTaskManager:
                     logger.debug("Get bilibili cookie success: {}".format(sess_data))
                     return sess_data
         except Exception as e:
-            logger.error("Get bilibili cookie failed: {}".format(e))
+            logger.error("Get bilibili cookie failed: {}. Please login first.".format(str(e)))
+            raise e
 
     def query_bilibili_api(self, url: str):
         r = requests.get(url, headers={
@@ -122,9 +123,9 @@ class BiliTaskManager:
 
                     time.sleep(self.refresh_interval_seconds)
             except RuntimeError as e:
-                logger.error('运行时错误: {}'.format(e.with_traceback))
+                logger.error('运行时错误: {}'.format(str(e)))
             except Exception as e:
-                logger.error('捕获异常: {}'.format(e.with_traceback))
+                logger.error('捕获异常: {}'.format(str(e)))
 
             time.sleep(self.refresh_interval_seconds)
 

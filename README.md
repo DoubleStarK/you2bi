@@ -30,9 +30,9 @@ source .venv/bin/activate
 pip3 install requirements.txt
 ```
 
-- 第三步,登录bilibili(需要根据自己平台指定可执行文件)
+- 第三步,登录bilibili(暂时只支持macos)
 ```shell
-./biliup_macos_arm64 login
+./setup.sh
 控制台出现二维码,用手机扫描二维码即可,出现cookie.json说明登录成功
 ```
 
