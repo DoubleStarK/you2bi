@@ -33,7 +33,7 @@ class BiliTaskManager:
             text = open(self.cookie_file).read()
             json_obj = json.loads(text)
             cookie_list = json_obj["data"]["cookie_info"]["cookies"]
-
+            
             for cookie in cookie_list:
                 if cookie["name"] == "SESSDATA":
                     sess_data = cookie["value"]

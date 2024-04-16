@@ -152,7 +152,7 @@ class VideoTransfer:
     @staticmethod
     def batch_translate(raw_text_arr: List[str]) -> List[str]:
         if len(raw_text_arr) > 1:
-            raw = '|||'.join(raw_text_arr)
+            raw = '\n'.join(raw_text_arr)
         elif len(raw_text_arr) == 0:
             return []
         else:
@@ -160,12 +160,17 @@ class VideoTransfer:
         logger.debug("Start to translate...")
         result = util.translate_to_chinese(raw)
         logger.debug("Done translating: origin=[{}] -> result=[{}].".format(raw, result))
-        return result.split('|||')
+
+        result_arr = result.split('\n')
+        if len(result_arr) != len(raw_text_arr):
+            logger.warning("Batch translate is not correct, using original...")
+            return raw_text_arr
+        return result_arr
 
     @staticmethod
     def cut_tags(tags: List[str]) -> List[str]:
         for i, tag in enumerate(tags):
-            tags[i] = tag[:20]
+            tags[i] = tag[:20].strip()
         return tags
 
     def download_youtube(self) -> bool:
@@ -182,8 +187,10 @@ class VideoTransfer:
 
         if not util.has_chs(self._video_title):
             self._video_title = VideoTransfer.batch_translate([self._video_title])[0]
+            self._video_title = self._video_title.strip()
         if not util.has_chs(self._video_description):
             self._video_description = VideoTransfer.batch_translate([self._video_description])[0]
+            self._video_description = self._video_description.strip()
             tags = VideoTransfer.cut_tags(self._video_tags)
             self._video_tags = VideoTransfer.batch_translate(tags)
 
@@ -199,7 +206,7 @@ class VideoTransfer:
                    + " --v " + repr(self.get_video_path())
                    + " --cover " + repr(self.get_cover_path())
                    + " --title " + repr(self._video_title[:80])
-                   + " --desc " + repr(self._video_description[:250])
+                   + " --desc " + repr(self._video_description[:200])
                    + " --t 2 "
                    + " --tid " + repr(self.TID)
                    + " --tags " + repr(','.join(self._video_tags))
