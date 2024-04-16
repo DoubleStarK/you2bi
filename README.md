@@ -46,6 +46,6 @@ python3 task_manager.py
   - \$ video_url \$ \<tid\>
 
 ## 致谢
-- git@github.com:biliup/biliup-rs.git
-- git@github.com:XiaoMiku01/biliup-go.git
-- git@github.com:Quandong-Zhang/Violet.git
+> - git@github.com:biliup/biliup-rs.git
+> - git@github.com:XiaoMiku01/biliup-go.git
+> - git@github.com:Quandong-Zhang/Violet.git
