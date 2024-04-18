@@ -96,14 +96,14 @@ class BiliTaskManager:
         try:
             task_history = self.read_records()
         except Exception as e:
-            logger.error('读取历史记录失败: {}'.format(e.with_traceback))
+            logger.error('读取历史记录失败: {}'.format(str(e)))
             task_history = dict()
         counter = 0
         while True:
             try:
                 while True:
                     counter += 1
-                    logger.info("Start new round {}".format(counter))
+                    logger.debug("Start new round {}".format(counter))
                     task_list = self.get_tasks()
                     for video_url, tid in task_list.items():
                         if video_url in task_history.keys():
