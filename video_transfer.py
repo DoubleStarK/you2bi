@@ -14,6 +14,7 @@ class VideoTransfer:
     def __init__(self,
                  video_url: str,
                  bili_tid: str,
+                 video_type: str,
                  translate_desc: bool = True,
                  translate_title: bool = True,
                  translate_tags: bool = False,
@@ -45,6 +46,7 @@ class VideoTransfer:
         self.remove_after_download = remove_after_download
         self.skip_if_cover_exist = skip_if_cover_exist
         self.skip_if_video_exist = skip_if_video_exist
+        self.video_type = video_type # 1自制,2转载
 
     def get_video_path(self):
         if len(self._video_id) == 0:
@@ -58,7 +60,8 @@ class VideoTransfer:
         self.make_video_dir(remove_existing_dir=False)
         ydl_opts = {
             # outtmpl 格式化下载后的文件名，避免默认文件名太长无法保存
-            'outtmpl': self._download_dir + '/%(id)s.mp4'
+            'outtmpl': self._download_dir + '/%(id)s.mp4',
+            'format': 'mp4'
         }
         if self.skip_if_video_exist and os.path.exists(self.get_video_path()):
             logger.debug("Video exist, skip download...")
@@ -207,7 +210,7 @@ class VideoTransfer:
                    + " --cover " + repr(self.get_cover_path())
                    + " --title " + repr(self._video_title[:80])
                    + " --desc " + repr(self._video_description[:200])
-                   + " --t 2 "
+                   + " --t " + repr(self.video_type)
                    + " --tid " + repr(self.TID)
                    + " --tags " + repr(','.join(self._video_tags))
                    + " --source " + repr(self._video_url)
@@ -236,6 +239,6 @@ class VideoTransfer:
 
 
 if __name__ == '__main__':
-    downloader = VideoTransfer(video_url="https://youtu.be/Q4YUB2GK_sw?si=4VitFjLnLrlSz4gK", bili_tid="21")
+    downloader = VideoTransfer(video_url="https://youtu.be/qW9nyAHJBw0?si=Z74Zh0deg9FemtcS", bili_tid="21", video_type="2")
     downloader.download_youtube()
     downloader.upload_bilibili()
