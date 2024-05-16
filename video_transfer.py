@@ -239,6 +239,6 @@ class VideoTransfer:
 
 
 if __name__ == '__main__':
-    downloader = VideoTransfer(video_url="https://youtu.be/qW9nyAHJBw0?si=Z74Zh0deg9FemtcS", bili_tid="21", video_type="2")
+    downloader = VideoTransfer(video_url="https://youtu.be/Pae8SZxUM4o?si=IlsT3xAtjmcWVkN0", bili_tid="21", video_type="2")
     downloader.download_youtube()
-    downloader.upload_bilibili()
+    # downloader.upload_bilibili()

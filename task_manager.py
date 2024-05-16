@@ -15,12 +15,14 @@ class BiliTaskManager:
                  sender_uid,
                  receiver_uid,
                  cookie_file='./cookie.json',
-                 download_record_file='./data.json',
+                 upload_record_file='./data.json',
                  chat_history_size=1,
+                 download_only=False,
                  refresh_interval_seconds=120):
         self.refresh_interval_seconds = refresh_interval_seconds
+        self.download_only = download_only
         self.cookie_file = cookie_file
-        self.download_record_file = download_record_file
+        self.download_record_file = upload_record_file
         self.chat_history_size = chat_history_size
         self.receiver_uid = receiver_uid
         self.sender_uid = sender_uid
@@ -134,4 +136,5 @@ class BiliTaskManager:
 if __name__ == '__main__':
     sender = '384542669'
     receiver = '3546592707610853'
-    BiliTaskManager(sender, receiver, refresh_interval_seconds=120).run_task()
+    task_manager = BiliTaskManager(sender, receiver, refresh_interval_seconds=120, download_only=True)
+    task_manager.run_task()
