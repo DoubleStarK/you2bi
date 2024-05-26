@@ -8,7 +8,7 @@
     - [x] macos
     - [ ] linux
     - [ ] windows
-  - [ ] 消息模板自定义
+  - [x] 消息模板自定义
   - [ ] 在聊天框中回复投稿状态
   - [ ] 可以选择使用Proxy
   - [ ] 视频防撞车(翻转,添加片头片尾)
@@ -42,10 +42,26 @@ pip3 install -r requirements.txt
 python3 task_manager.py
 ```
 
-- 最后一步,从youtube中复制视频链接,并从sender账号向receiver账号发送消息,具体格式(tid即[B站分区id](https://biliup.github.io/tid-ref.html)):
-  - \$ video_url \$ \<tid\>
+- 最后一步,从youtube中复制视频链接,并从sender账号向receiver账号发送消息,具体格式可在message_template.py->__get_keywords中自定义:
+  - 默认模板：
+```python
+            r'<v:\s*(.*?)\s*>': 'video_url', # 这样定义，则消息中的<v:https://youtube.com/xxx>视频链接可被识别出来
+            r'<vt:\s*(.*?)\s*>': 'video_type', # 这样定义，则消息中的<vt:1>视频类型（1自制，2转载）可被识别出；下面的以此类推
+            r'<tid:\s*(.*?)\s*>': 'tid', # 投稿分区id
+            r'<trans:\s*(.*?)\s*>': 'trans_video_meta', # 是否翻译视频标题，tag和描述
+            r'<sf:\s*(.*?)\s*>': 'subtitle_from', # 开发中，暂不可用
+            r'<st:\s*(.*?)\s*>': 'subtitle_to',  # 开发中，暂不可用
+            r'<dlo:\s*(.*?)\s*>': 'download_only', # 仅下载
+```
+- 示例消息：
+  - `可以添加一些额外内容 <v:http://xxx> <vt:2> <tid: 20> <trans: True > <dlo:True> 可以添加一些额外内容'`
+ 
+## 更新日志
+- 20240526：新增消息模板功能，用户可自定义想发送消息的格式，通过发送的消息控制此次下载上传任务；任务记录现在保存在data_v2.json中了。
 
 ## 致谢
 > - git@github.com:biliup/biliup-rs.git
 > - git@github.com:XiaoMiku01/biliup-go.git
 > - git@github.com:Quandong-Zhang/Violet.git
+
+
