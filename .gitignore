@@ -6,3 +6,4 @@ __pycache__/
 data.json
 cookie.json
 biliup
+.DS_Store
