@@ -18,6 +18,7 @@ class VideoTransfer:
                  translate_desc: bool = True,
                  translate_title: bool = True,
                  translate_tags: bool = False,
+                 skip_upload: bool = False,
                  convert_cover_format: bool = True,
                  remove_after_download: bool = True,
                  skip_if_cover_exist: bool = True,
@@ -37,7 +38,7 @@ class VideoTransfer:
         self._video_url = video_url
 
         self.TID = self._default_bili_tid if bili_tid == '' else bili_tid
-
+        self.skip_upload = skip_upload
         self.translate_desc = translate_desc
         self.translate_title = translate_title
         self.translate_tags = translate_tags
@@ -182,6 +183,9 @@ class VideoTransfer:
         self.download_image(self._video_cover_url)
 
     def upload_bilibili(self) -> bool:
+        if self.skip_upload:
+            logger.debug("{} is set to download only, skipping upload to bilibili".format(self._video_url))
+            return False
         self._video_tags.append(self._video_author)
         self._video_tags.append("搬运")
         self._video_tags.append("油管")

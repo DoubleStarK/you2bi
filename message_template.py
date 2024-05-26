@@ -14,24 +14,24 @@ class MessageTemplate:
     '''
     def __init__(self) -> None:
         '''
-        定义消息模板中的一些属性
+        定义消息模板中的一些属性和默认值
         '''
         self.video_url = ''
-        self.tid = 0
-        self.download_only = False
-        self.trans_title_tag = True
-        self.subtitle_from = 'en' # 视频中语音的语言,会翻译成字幕
-        self.subtitle_to = 'zh'   # 想给视频自动添加字幕的语言
-        self.__pre_check_attr()
+        self.tid = 21                   # 投稿tid
+        self.video_type = 2             # 1自制,2转载
+        self.download_only = False      # 仅下载,不上传
+        self.trans_video_meta = True    # 翻译title,tag,description
+        self.subtitle_from = 'en'       # 视频中语音的语言,会翻译成字幕
+        self.subtitle_to = 'zh'         # 想给视频自动添加字幕的语言
 
     def __pre_check_attr(self):
-        for k, v in self.get_keywords().items():
+        for k, v in self.__get_keywords().items():
             try:
                 self.__getattribute__(v)
             except AttributeError:
                 logger.error('message template wrong: key:{} does not have attribute'.format(k))
     
-    def get_keywords(self)-> dict:
+    def __get_keywords(self)-> dict:
         '''
         在此处定义消息模板到属性的映射
         解释:
@@ -40,21 +40,23 @@ class MessageTemplate:
         '''
         return {
             r'<v:\s*(.*?)\s*>': 'video_url',
-            r'<t:\s*(.*?)\s*>': 'tid',
-            r'<ttt:\s*(.*?)\s*>': 'trans_title_tag',
+            r'<vt:\s*(.*?)\s*>': 'video_type',
+            r'<tid:\s*(.*?)\s*>': 'tid',
+            r'<trans:\s*(.*?)\s*>': 'trans_video_meta',
             r'<sf:\s*(.*?)\s*>': 'subtitle_from',
-            r'<sl:\s*(.*?)\s*>': 'subtitle_to',
+            r'<st:\s*(.*?)\s*>': 'subtitle_to',
             r'<dlo:\s*(.*?)\s*>': 'download_only',
         }
 
     def set_from_message(self, message: str):
-        for k, v in self.get_keywords().items():
+        self.__pre_check_attr()
+        for k, v in self.__get_keywords().items():
             pattern = re.compile(k, re.DOTALL)
             match_res = pattern.findall(message)
             if len(match_res) == 1:
-                self.__setattr__(v, self.convert_params(match_res[0]))
+                self.__setattr__(v, self.__convert_params(match_res[0]))
 
-    def convert_params(self, dirty: str) -> any:
+    def __convert_params(self, dirty: str) -> any:
         if dirty.lower() == 'true':
             return True
         elif dirty.lower() == 'false':
@@ -69,5 +71,5 @@ class MessageTemplate:
 
 if __name__ == '__main__':
     t = MessageTemplate()
-    t.set_from_message('<t:1> <v:2> <ttt: True> <tsf: en >   <asl: cn>')
+    t.set_from_message('foo <v:http://xxx> <vt:2> <tid: 20> <trans: True > <sf:en><st:cn> <dlo:True> bar')
     print(t.__dict__)

@@ -1,13 +1,11 @@
 import json
 import re
 import time
-
 import requests
 from typing import List
-
 from video_transfer import VideoTransfer
-
 from util import logger
+from message_template import MessageTemplate
 
 
 class BiliTaskManager:
@@ -15,7 +13,7 @@ class BiliTaskManager:
                  sender_uid,
                  receiver_uid,
                  cookie_file='./cookie.json',
-                 upload_record_file='./data.json',
+                 upload_record_file='./data_v2.json',
                  chat_history_size=1,
                  download_only=False,
                  refresh_interval_seconds=120):
@@ -63,6 +61,7 @@ class BiliTaskManager:
         with open(self.download_record_file, "r") as f:
             return json.loads(f.read())
 
+    @DeprecationWarning
     @staticmethod
     def match_url(url) -> str:
         match = re.search(r'\$(.*?)\$', url)
@@ -70,6 +69,7 @@ class BiliTaskManager:
             return match.group(1)
         return ''
 
+    @DeprecationWarning
     @staticmethod
     def match_tid(url) -> str:
         match = re.search(r'<(.*?)>', url)
@@ -77,24 +77,27 @@ class BiliTaskManager:
             return match.group(1)
         return ''
 
-    def get_tasks(self) -> dict:
+    def get_tasks(self) -> dict[str, MessageTemplate]:
         task_paris = {}
         resp = self.query_bilibili_api(self.chat_api)
         message_list = resp["data"]["messages"]
 
         for msg_obj in message_list:
             if str(msg_obj["sender_uid"]) == self.sender_uid and int(msg_obj["msg_type"]) == 1:
-                video_url, tid = self.match_url(msg_obj["content"]), self.match_tid(msg_obj["content"])
-                video_url = video_url.replace("\\/", "/")
-                if len(video_url) > 0:
-                    logger.debug("Task info from message: video_url {} to tid {}.".format(video_url, tid))
-                    task_paris[video_url] = tid
+                template = MessageTemplate()
+                template.set_from_message(msg_obj["content"])
+                template.video_url = template.video_url.replace("\\/", "/")
+                # video_url, tid = self.match_url(msg_obj["content"]), self.match_tid(msg_obj["content"])
+                # video_url = video_url.replace("\\/", "/")
+                if len(template.video_url) > 0:
+                    logger.debug("Task info from message: video_url {} to tid {}.".format(template.video_url, template.tid))
+                    task_paris[template.video_url] = template
                 else:
                     continue
 
         return task_paris
 
-    def run_task(self):
+    def run(self):
         try:
             task_history = self.read_records()
         except Exception as e:
@@ -107,18 +110,25 @@ class BiliTaskManager:
                     counter += 1
                     logger.debug("Start new round {}".format(counter))
                     task_list = self.get_tasks()
-                    for video_url, tid in task_list.items():
+                    for video_url, message_template in task_list.items():
                         if video_url in task_history.keys():
-                            logger.debug("Skip already done task: video_url {} to tid {}.".format(video_url, tid))
+                            logger.debug("Skip already done task: video_url {} to tid {}.".format(video_url, message_template.tid))
                             continue
-                        logger.debug("New task: video_url {} to tid {}.".format(video_url, tid))
+                        logger.debug("New task: video_url {} to tid {}.".format(video_url, message_template))
 
-                        transferer = VideoTransfer(video_url, tid)
+                        transferer = VideoTransfer(
+                            video_url, 
+                            bili_tid=message_template.tid,
+                            video_type=message_template.video_type,
+                            translate_desc=message_template.trans_video_meta,
+                            translate_tags=message_template.trans_video_meta,
+                            translate_title=message_template.trans_video_meta,
+                            skip_upload=message_template.download_only,
+                        )
                         transferer.download_youtube()
                         success = transferer.upload_bilibili()
-
-                        task_history[video_url] = tid
                         if success:
+                            task_history[video_url] = message_template.__dict__
                             self.save_record(task_history)
 
                         time.sleep(self.refresh_interval_seconds)
@@ -136,5 +146,10 @@ class BiliTaskManager:
 if __name__ == '__main__':
     sender = '384542669'
     receiver = '3546592707610853'
-    task_manager = BiliTaskManager(sender, receiver, refresh_interval_seconds=120, download_only=True)
-    task_manager.run_task()
+    task_manager = BiliTaskManager(
+        sender, 
+        receiver, 
+        refresh_interval_seconds=120, 
+        download_only=True,
+    )
+    task_manager.run()
