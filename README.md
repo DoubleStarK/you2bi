@@ -58,6 +58,7 @@ python3 task_manager.py
  
 ## 更新日志
 - 20240526：新增消息模板功能，用户可自定义想发送消息的格式，通过发送的消息控制此次下载上传任务；任务记录现在保存在data_v2.json中了。
+- 20240601：儿童节快乐！支持了windows平台。
 
 ## 致谢
 > - git@github.com:biliup/biliup-rs.git
