@@ -204,8 +204,9 @@ class VideoTransfer:
 
         if not os.path.exists("cookie.json"):
             raise RuntimeError
-
-        command = ("./biliup upload "
+        
+        cmd_header = "./biliup upload " if os.name == 'posix' else '.\\biliup.exe '
+        command = (cmd_header
                    + " --v " + repr(self.get_video_path())
                    + " --cover " + repr(self.get_cover_path())
                    + " --title " + repr(self._video_title[:80])
@@ -241,4 +242,4 @@ class VideoTransfer:
 if __name__ == '__main__':
     downloader = VideoTransfer(video_url="https://youtu.be/Pae8SZxUM4o?si=IlsT3xAtjmcWVkN0", bili_tid="21", video_type="2")
     downloader.download_youtube()
-    # downloader.upload_bilibili()
+    downloader.upload_bilibili()
