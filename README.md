@@ -7,7 +7,7 @@
   - [ ] 多平台支持
     - [x] macos
     - [ ] linux
-    - [ ] windows
+    - [x] windows
   - [x] 消息模板自定义
   - [ ] 在聊天框中回复投稿状态
   - [ ] 可以选择使用Proxy
