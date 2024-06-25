@@ -1,5 +1,6 @@
-# you2bi 自动爬取youtube视频发送到bilibili
-> 自动爬取youtube视频发送到bilibili | 自动爬取机器人 | youtube | bilibili | 自动投稿
+# you2bi 自动爬取youtube/tiktok(支持大大量视频网站)视频发送到bilibili
+> 自动爬取youtube视频发送到bilibili | 自动爬取机器人 | youtube | tiktok | bilibili | 自动投稿
+> [支持站点](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 > - 通过向bilibili账号私信youtube链接,一键下载youtube视频并投稿到bilibili
 > - 支持自动翻译标题,描述,tags
 
