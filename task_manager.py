@@ -148,7 +148,8 @@ if __name__ == '__main__':
     receiver = '3546592707610853'
     task_manager = BiliTaskManager(
         sender, 
-        receiver, 
+        receiver,
+        chat_history_size=2,
         refresh_interval_seconds=120, 
         download_only=True,
     )

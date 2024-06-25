@@ -125,12 +125,12 @@ class VideoTransfer:
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 video_meta_info = ydl.extract_info(self._video_url, download=False)
-                self._video_title = video_meta_info['title']
-                self._video_author = video_meta_info['uploader']
-                self._video_id = video_meta_info['id']
-                self._video_description = video_meta_info['description']
-                self._video_tags = video_meta_info['tags']
-                self._video_cover_url = video_meta_info['thumbnail']
+                self._video_title = video_meta_info.get('title')
+                self._video_author = video_meta_info.get('uploader')
+                self._video_id = video_meta_info.get('id')
+                self._video_description = video_meta_info.get('description')
+                self._video_tags = video_meta_info.get('tags')
+                self._video_cover_url = video_meta_info.get('thumbnail')
                 logger.debug("Done getting meta info of: {}".format(self._video_url))
                 return video_meta_info
         except Exception as e:
@@ -244,6 +244,10 @@ class VideoTransfer:
 
 
 if __name__ == '__main__':
-    downloader = VideoTransfer(video_url="https://youtu.be/Pae8SZxUM4o?si=IlsT3xAtjmcWVkN0", bili_tid="21", video_type="2")
+    downloader = VideoTransfer(
+        video_url="https://www.tiktok.com/t/ZTNFkeGRx/", 
+        bili_tid="21", 
+        video_type="2", # 转载
+    )
     downloader.download_youtube()
-    downloader.upload_bilibili()
+    # downloader.upload_bilibili()
